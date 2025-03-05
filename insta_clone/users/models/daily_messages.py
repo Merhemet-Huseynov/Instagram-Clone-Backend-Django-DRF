@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from users.models.daily_message_limit import DailyMessageLimit  
 
-    
+
 class DailyMessage(models.Model):
     """
     A model to represent the daily messages sent to users, 

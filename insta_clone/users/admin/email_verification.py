@@ -11,7 +11,7 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     """
     
     list_display = (
-        "get_email",
+        "email",
         "verification_code",
         "is_verified",
         "local_created_at",
@@ -22,27 +22,27 @@ class VerificationCodeAdmin(admin.ModelAdmin):
         "created_at"
     )
     search_fields = (
-        "user__email", 
+        "email", 
         "verification_code"
-    ) 
+    )
     readonly_fields = (
         "created_at",
     )
-
-    actions = ["mark_as_verified", "delete_expired_codes"]
-
-    def get_email(self, obj: VerificationCode) -> str:
-        """
-        Return the email of the associated user.
-        """
-        return obj.user.email
-
-    get_email.short_description = "Email"
-    get_email.admin_order_field = "user__email"
+    
+    actions = [
+        "mark_as_verified", 
+        "delete_expired_codes"
+    ]
 
     def local_created_at(self, obj: VerificationCode) -> str:
         """
         Return the local time of when the verification code was created.
+        
+        Args:
+            obj (VerificationCode): The verification code instance.
+        
+        Returns:
+            str: The formatted local creation time.
         """
         return localtime(obj.created_at).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -52,9 +52,15 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     def is_expired_display(self, obj: VerificationCode) -> bool:
         """
         Display whether the verification code is expired.
+        
+        Args:
+            obj (VerificationCode): The verification code instance.
+        
+        Returns:
+            bool: True if expired, False otherwise.
         """
         return obj.is_expired()
-
+    
     is_expired_display.short_description = "Expired?"
     is_expired_display.boolean = True
 
@@ -62,15 +68,31 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     def mark_as_verified(self, request, queryset):
         """
         Mark selected verification codes as verified.
+        
+        Args:
+            request: The HTTP request object.
+            queryset: The queryset of selected verification code instances.
         """
         updated_count = queryset.update(is_verified=True)
-        self.message_user(request, f"{updated_count} verification codes marked as verified.")
+        self.message_user(
+            request, 
+            f"{updated_count} verification codes marked as verified."
+        )
 
     @admin.action(description="Delete expired verification codes")
     def delete_expired_codes(self, request, queryset):
         """
         Delete expired verification codes based on the 3-minute expiration rule.
+        
+        Args:
+            request: The HTTP request object.
+            queryset: The queryset of verification code instances.
         """
-        expired_codes = queryset.filter(created_at__lt=localtime() - timedelta(seconds=180))
+        expired_codes = queryset.filter(
+            created_at__lt=localtime() - timedelta(seconds=180)
+        )
         deleted_count, _ = expired_codes.delete()
-        self.message_user(request, f"{deleted_count} expired verification codes deleted.")
+        self.message_user(
+            request, 
+            f"{deleted_count} expired verification codes deleted."
+        )
