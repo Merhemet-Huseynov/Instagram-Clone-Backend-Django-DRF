@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
-from .celery import Celery
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -45,10 +44,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     # Third party
+    "drf_yasg",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
-
 
     # Apps
     "users",

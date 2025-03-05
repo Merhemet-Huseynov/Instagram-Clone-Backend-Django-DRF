@@ -16,6 +16,9 @@ django-channels = "*"
 psycopg2-binary = "*"
 pytest = "*"
 pytest-django = "*"
+django-celery-email = "*"
+drf-yasg = "*"
+dj-database-url = "*"
 
 [dev-packages]
 

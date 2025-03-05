@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from users.models.daily_message_limit import DailyMessageLimit  
 
-
+    
 class DailyMessage(models.Model):
     """
     A model to represent the daily messages sent to users, 
@@ -13,7 +13,7 @@ class DailyMessage(models.Model):
         message_sent_at (datetime): The timestamp of when the message was sent.
     """
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField()
     message_sent_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -163,5 +163,4 @@ class DailyMessage(models.Model):
             return expiration_message
 
         cls.objects.create(email=email)
-        message_successfully = "Message sent successfully!"
-        return message_successfully
+        return "Message sent successfully!"

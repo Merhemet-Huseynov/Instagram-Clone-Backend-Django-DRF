@@ -9,23 +9,10 @@ class VerificationCode(models.Model):
     """
     Model for storing email verification codes.
     """
-    user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE,
-        related_name="verification_codes"
-    )
-    email = models.EmailField(
-        unique=True
-    ) 
-    verification_code = models.CharField(
-        max_length=6
-    )
-    is_verified = models.BooleanField(
-        default=False
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    email = models.EmailField()
+    verification_code = models.CharField(max_length=6)
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         indexes = [
@@ -34,7 +21,7 @@ class VerificationCode(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Verification code for {self.email}"
+        return f"Verification code for {self.user.email}"
 
     def is_expired(self) -> bool:
         """
