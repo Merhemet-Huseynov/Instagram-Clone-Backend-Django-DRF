@@ -43,11 +43,13 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # Admin panel
     path(
         "admin/", 
         admin.site.urls
     ),
 
+    # Swagger and ReDoc documentation
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
@@ -60,6 +62,7 @@ urlpatterns = [
         name="redoc-ui",
     ),
 
+    # JWT autentifikasiyası üçün endpointlər
     path(
         "api/token/", 
         TokenObtainPairView.as_view(),
@@ -78,6 +81,7 @@ urlpatterns = [
         name="token_verify"
     ),
     
+    # API paths
     path(
         "api/v1/users/", 
         include("users.urls")

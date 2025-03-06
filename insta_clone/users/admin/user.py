@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import mark_safe
 from django.contrib.auth.models import User
+from django.http import HttpRequest
 
 from ..forms import CustomUserCreationForm, CustomUserChangeForm
 from ..models import CustomUser
@@ -10,54 +11,97 @@ from ..models import CustomUser
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     """
-    Custom admin interface for the CustomUser model.
-
-    This class defines how the CustomUser model is presented in the Django admin panel,
-    including displaying the profile picture preview and bio fields, as well as handling 
-    user creation and modification forms.
+    Admin configuration for managing the CustomUser model in the Django admin panel.
     """
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
+
     model = CustomUser
-
-    def profile_picture_preview(self, obj: CustomUser) -> str:
-        """
-        Generates an HTML preview for the user's profile picture in the admin list view.
-
-        Args:
-            obj (CustomUser): The user instance.
-
-        Returns:
-            str: HTML markup for the image preview or a placeholder text if no image is set.
-        """
-        if obj.profile_picture:
-            return mark_safe(f'<img src="{obj.profile_picture.url}" width="50" height="50" />')
-        return "No image"
-    
-    profile_picture_preview.short_description = "Profile Picture Preview"
-
-    list_display = ("email", "profile_picture_preview", "is_staff", "is_active",)
-    list_filter = ("email", "is_staff", "is_active",)
+    list_display = [
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        "is_staff",
+        "slug",
+        "profile_picture_preview",
+    ]
+    list_filter = [
+        "is_active", 
+        "is_staff"
+    ]
+    search_fields = [
+        "email", 
+        "first_name", 
+        "last_name"
+    ]
+    ordering = [
+        "email"
+    ]
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Personal Info", {"fields": ("profile_picture", "bio")}),
-        ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
-        ("Important dates", {"fields": ("last_login", "date_joined")}),
+        (None, {"fields": (
+            "email", 
+            "password"
+        )}),
+        ("Personal info", {"fields": (
+            "first_name", 
+            "last_name", 
+            "bio", 
+            "profile_picture", 
+            "slug"
+        )}),
+        ("Permissions", {"fields": (
+            "is_active", 
+            "is_staff", 
+            "is_superuser", 
+            "groups", 
+            "user_permissions"
+        )}),
+        ("Important dates", {"fields": (
+            "last_login", 
+            "date_joined"
+        )}),
     )
 
     add_fieldsets = (
-        (None, {
-            "classes": ("wide",),
-            "fields": (
-                "email", "password1", "password2", "is_staff",
-                "is_active", "groups", "user_permissions"
-            )}
-        ),
+        (None, {"fields": (
+            "email", 
+            "password1", 
+            "password2"
+        )}),
+        ("Personal info", {"fields": (
+            "first_name", 
+            "last_name", 
+            "bio", 
+            "profile_picture", 
+            "slug"
+        )}),
+        ("Permissions", {"fields": (
+            "is_active", 
+            "is_staff", 
+            "is_superuser"
+        )}),
     )
 
-    search_fields = ("email",)
-    ordering = ("email",)
+    filter_horizontal = ("groups", "user_permissions")
 
+    def profile_picture_preview(self, obj: CustomUser) -> str:
+        """
+        Displays a small preview of the profile picture in the admin panel.
 
+        Args:
+            obj (CustomUser): The CustomUser instance.
 
+        Returns:
+            str: HTML string for displaying the profile picture or "No Image" 
+            if not available.
+        """
+        if obj.profile_picture:
+            try:
+                return mark_safe(
+                    f'<img src="{obj.profile_picture.url}" width="50" height="50" />'
+                )
+            except Exception as e:
+                return "No Image"
+        return "No Image"
+
+    profile_picture_preview.short_description = "Profile Picture"

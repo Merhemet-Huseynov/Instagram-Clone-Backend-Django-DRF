@@ -36,6 +36,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(
         required=False
     )
+    slug = serializers.CharField(
+        read_only=True
+    )
 
     class Meta:
         model = User
@@ -46,7 +49,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name", 
             "password", 
             "bio", 
-            "profile_picture"
+            "profile_picture",
+            "slug"
         ]
     
     def validate_email(self, value):

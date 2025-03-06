@@ -1,6 +1,8 @@
+from typing import Any
 from django.contrib import admin
-from ..models import Follow
+from django.utils.html import format_html
 from django.contrib.auth import get_user_model
+from ..models import Follow
 
 User = get_user_model()
 
@@ -8,28 +10,51 @@ User = get_user_model()
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     """
-    Admin panel customization for Follow model.
-    
-    This class customizes the display and behavior of the Follow model
-    in the Django admin panel. It adds search functionality, filters,
-    ordering, and date hierarchy for better usability.
+    Admin class for managing the Follow model in the Django admin panel.
     """
-    
-    list_display = ("follower", "followed", "created_at")
-    search_fields = ("follower__username", "followed__username")  
-    list_filter = ("created_at",)  
-    ordering = ("-created_at",)  
-    date_hierarchy = "created_at"  
-    
-    def get_queryset(self, request: 'HttpRequest') -> 'QuerySet[Follow]':
+
+    model = Follow
+    list_display = (
+        "follower", 
+        "followed", 
+        "created_at", 
+        "followed_since"
+    )
+    list_filter = ("created_at",)
+    search_fields = (
+        "follower__email", 
+        "followed__email", 
+        "follower__username", 
+        "followed__username"
+    )
+    ordering = ("-created_at",)
+    list_select_related = ("follower", "followed")
+    date_hierarchy = "created_at"
+    readonly_fields = ("created_at",)
+
+    def followed_since(self, obj: Follow) -> str:
         """
-        Custom queryset to order the follow records by the most recent creation.
-        
+        Returns the formatted date and time when the user started following another user.
+
         Args:
-            request (HttpRequest): The HTTP request object.
-        
+            obj (Follow): The Follow object.
+
         Returns:
-            QuerySet[Follow]: The queryset of follow records ordered by creation date.
+            str: Formatted date and time (YYYY-MM-DD HH:MM).
         """
-        qs = super().get_queryset(request)
-        return qs.order_by("-created_at")
+        return format_html("<span>{}</span>", obj.created_at.strftime("%Y-%m-%d %H:%M"))
+    
+    followed_since.short_description = "Followed Since"
+
+    def get_queryset(self, request: Any) -> Any:
+        """
+        Optimizes the queryset by using `select_related` to prefetch related fields.
+
+        Args:
+            request (Any): The Django admin request.
+
+        Returns:
+            QuerySet: Optimized queryset for the Follow model.
+        """
+        queryset = super().get_queryset(request)
+        return queryset.select_related("follower", "followed")
