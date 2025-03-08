@@ -17,7 +17,7 @@ class FollowSerializer(serializers.ModelSerializer):
             "followed",
             "created_at"
         ]
-        read_only_fields: list[str] = [
+        read_only_fields = [
             "follower",
             "created_at"
         ]
