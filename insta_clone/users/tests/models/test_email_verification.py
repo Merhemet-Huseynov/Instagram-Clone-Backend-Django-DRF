@@ -1,7 +1,8 @@
 import pytest
 from django.utils import timezone
 from datetime import timedelta
-from users.models import VerificationCode  # Adjust the import according to your app structure
+from users.models import VerificationCode
+
 
 @pytest.mark.django_db
 def test_verification_code_creation():
