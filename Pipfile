@@ -18,6 +18,7 @@ pytest = "*"
 pytest-django = "*"
 django-celery-email = "*"
 drf-yasg = "*"
+pytest-mock = "*"
 
 [dev-packages]
 

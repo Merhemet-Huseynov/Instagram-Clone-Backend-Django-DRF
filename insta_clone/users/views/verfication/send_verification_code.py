@@ -6,7 +6,6 @@ from users.serializers.verification import SendVerificationCodeSerializer
 from users.models import DailyMessage
 from users.tasks import send_verification_email
 
-
 __all__ = ["SendVerificationCodeView"]
 
 logger = logging.getLogger(__name__)
