@@ -1,1 +1,2 @@
-from .like_views import *
+from .post_likes import *
+from .comment_likes import *
