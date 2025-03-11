@@ -8,7 +8,7 @@ from drf_yasg import openapi
 import logging
 
 from posts.models import Post
-from likes.models import Like
+from likes.models import PostLike
 
 __all__ = [
     "LikeToggleAPIView"
@@ -56,7 +56,7 @@ class LikeToggleAPIView(APIView):
 
         post: Post = get_object_or_404(Post, id=post_id)
         
-        was_liked: bool = Like.toggle_like(request.user, post)
+        was_liked: bool = PostLike.toggle_like(request.user, post)
 
         if was_liked:
             logger.info(f"User {request.user.id} liked post {post.id}.")

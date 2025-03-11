@@ -4,7 +4,7 @@ from posts.models import Post
 from typing import Type
 
 
-class Like(models.Model):
+class PostLike(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
@@ -27,7 +27,7 @@ class Like(models.Model):
         return f"{self.user.email} liked {self.post.id}"
 
     @classmethod
-    def toggle_like(cls: Type["Like"], user: settings.AUTH_USER_MODEL, post: Post) -> bool:
+    def toggle_like(cls: Type["PostLike"], user: settings.AUTH_USER_MODEL, post: Post) -> bool:
         """
         Toggles the like status for a post by a user.
         

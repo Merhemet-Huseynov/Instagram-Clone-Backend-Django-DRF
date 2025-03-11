@@ -91,8 +91,12 @@ urlpatterns = [
         include("posts.urls")
     ),
     path(
-        "api/v1/likes",
+        "api/v1/likes/",
         include("likes.urls")
+    ),
+    path(
+        "api/v1/comments/",
+        include("comments.urls")
     )
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,2 +1,2 @@
-from .post_likes import LikeAdmin
+from .post_likes import PostLikeAdmin
 from .comment_likes import CommentLikeAdmin

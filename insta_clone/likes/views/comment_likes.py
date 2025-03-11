@@ -2,6 +2,7 @@ import logging
 from rest_framework.views import APIView, Response, status
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
+from django.db.utils import IntegrityError
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -9,10 +10,9 @@ from comments.models import Comment
 from likes.models import CommentLike
 
 __all__ = [
-    "CommentLikeToggleAPIView"
+    "CommentLikeToggleAPIView",
 ]
 
-# Setting up the logger
 logger = logging.getLogger(__name__)
 
 
@@ -34,21 +34,23 @@ class CommentLikeToggleAPIView(APIView):
         This view allows an authenticated user to like or unlike a comment. If the user
         likes the comment, a new like is created; if the user unlikes it, the like is removed.
 
-        Args:
-            request (Request): The HTTP request object.
-            comment_id (int): The ID of the comment to like/unlike.
-
         Returns:
             Response: A response indicating the action taken, either like or unlike.
         """
         comment = get_object_or_404(Comment, id=comment_id)
-        
+
         try:
             was_liked = CommentLike.toggle_like(request.user, comment)
-        except Exception as e:
-            logger.error(f"Error toggling like for comment {comment_id}: {e}")
+        except IntegrityError as e:
+            logger.error(f"Database integrity error while toggling like for comment {comment_id}: {e}")
             return Response(
-                {"detail": "An error occurred while toggling like."}, 
+                {"detail": "Database error occurred."}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            logger.error(f"Unexpected error while toggling like for comment {comment_id}: {e}")
+            return Response(
+                {"detail": "An unexpected error occurred."}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 

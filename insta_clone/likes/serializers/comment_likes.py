@@ -4,19 +4,14 @@ from likes.models import CommentLike
 
 class CommentLikeSerializer(serializers.ModelSerializer):
     """
-    Serializer for the CommentLike model, providing a formatted date field.
+    Serializer for the CommentLike model.
 
-    Fields:
-        id (int): The unique identifier for the comment like.
-        user (str): The user who liked the comment.
-        comment (str): The comment that was liked.
-        formatted_date (str): The formatted date when the like was created.
-
-    Methods:
-        get_formatted_date: Returns the formatted date of the like's creation.
+    This serializer is responsible for transforming CommentLike model instances
+    into JSON format, including user, comment, and creation timestamp (created_at).
+    The created_at field is formatted as "YYYY-MM-DD HH:MM:SS" for better readability.
     """
 
-    formatted_date = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 
     class Meta:
         model = CommentLike
@@ -24,23 +19,12 @@ class CommentLikeSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "comment",
-            "formatted_date"
+            "created_at"
         ]
         read_only_fields = [
             "id", 
             "user", 
-            "created_at", 
-            "formatted_date"
+            "comment",
+            "created_at"
         ]
-
-    def get_formatted_date(self, obj: CommentLike) -> str:
-        """
-        Returns the formatted creation date of the comment like.
-
-        Args:
-            obj (CommentLike): The instance of the CommentLike model.
-
-        Returns:
-            str: The formatted date in "YYYY-MM-DD HH:MM:SS" format.
-        """
-        return obj.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        

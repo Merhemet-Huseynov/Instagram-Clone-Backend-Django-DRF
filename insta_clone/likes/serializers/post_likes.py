@@ -3,7 +3,7 @@ from likes.models import Like
 from typing import Any
 
 
-class LikeSerializer(serializers.ModelSerializer):
+class PostLikeSerializer(serializers.ModelSerializer):
     """
     Serializer for the Like model, including fields for the like's ID, user, 
     associated post, and formatted creation date. It also includes a method 
@@ -19,7 +19,7 @@ class LikeSerializer(serializers.ModelSerializer):
     formatted_date: serializers.SerializerMethodField
 
     class Meta:
-        model = Like
+        model = PostLike
         fields = [
             "id", 
             "user", 
@@ -33,7 +33,7 @@ class LikeSerializer(serializers.ModelSerializer):
             "formatted_date",
         ]
     
-    def get_formatted_date(self, obj: Like) -> str:
+    def get_formatted_date(self, obj: PostLike) -> str:
         """
         Returns a formatted string representation of the like's creation date.
 

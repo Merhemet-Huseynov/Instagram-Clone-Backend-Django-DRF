@@ -1,10 +1,10 @@
 from django.contrib import admin
-from ..models import Like
+from ..models import PostLike
 from typing import List
 
 
-@admin.register(Like)
-class LikeAdmin(admin.ModelAdmin):
+@admin.register(PostLike)
+class PostLikeAdmin(admin.ModelAdmin):
     """
     Admin configuration for the Like model.
     Provides features like listing, filtering, and searching for likes.
