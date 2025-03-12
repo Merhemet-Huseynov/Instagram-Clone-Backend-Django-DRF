@@ -48,3 +48,21 @@ class Post(models.Model):
             str: A string representation of the post.
         """
         return f"{self.user.email} - {self.caption[:30]}"
+   
+    def get_like_count(self) -> int:
+        """
+        Returns the total number of likes on this post.
+        """
+        return self.likes.count()
+
+    def get_comment_count(self) -> int:
+        """
+        Returns the total number of comments on this post.
+        """
+        return self.comments.count()
+
+    def get_users_who_liked(self) -> list:
+        """
+        Returns a list of emails of users who liked the post.
+        """
+        return list(self.likes.values_list("user__email", flat=True))

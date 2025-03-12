@@ -8,14 +8,28 @@ class PostSerializer(serializers.ModelSerializer):
 
     This serializer includes:
     - "user": Read-only field showing the related user's string representation.
-    - "formatted_date": A computed field formatting the "created_at" timestamp.
-    - Other fields: "id", "image", "caption".
-
-    Read-only fields: "user", "created_at", "formatted_date".
+    - "created_at": Automatically formatted timestamp.
+    - "like_count": Number of likes on the post.
+    - "comment_count": Number of comments on the post.
+    - "users_who_liked": List of users who liked the post.
     """
 
-    user: serializers.StringRelatedField = serializers.StringRelatedField(read_only=True)
-    formatted_date: serializers.SerializerMethodField = serializers.SerializerMethodField()
+    user = serializers.StringRelatedField(
+        read_only=True
+    )
+    created_at = serializers.DateTimeField(
+        format="%d %B %Y, %H:%M:%S", 
+        read_only=True
+    )
+    like_count = serializers.IntegerField(
+        source="get_like_count", 
+        read_only=True
+    )
+    comment_count = serializers.IntegerField(
+        source="get_comment_count", 
+        read_only=True
+    )
+    users_who_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -24,22 +38,27 @@ class PostSerializer(serializers.ModelSerializer):
             "user",
             "image",
             "caption",
-            "formatted_date",
+            "created_at",
+            "like_count",
+            "comment_count",
+            "users_who_liked",
         ]
         read_only_fields = [
             "user",
             "created_at",
-            "formatted_date",
+            "like_count",
+            "comment_count",
+            "users_who_liked",
         ]
 
-    def get_formatted_date(self, obj: Post) -> str:
+    def get_users_who_liked(self, obj: Post) -> list:
         """
-        Returns the formatted creation date of the post.
+        Returns a list of emails of users who liked the post.
 
         Args:
             obj (Post): The post instance.
 
         Returns:
-            str: Formatted date as "DD Month YYYY, HH:MM:SS".
+            list: A list of emails of users who liked the post.
         """
-        return obj.created_at.strftime("%d %B %Y, %H:%M:%S")
+        return obj.likes.values_list("user__email", flat=True)
