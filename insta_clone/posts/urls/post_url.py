@@ -4,13 +4,13 @@ from posts.views import *
 urlpatterns = [
     # Post endpoints
     path(
-        "post-list/", 
+        "posts/post-list/", 
         PostListAPIView.as_view(), 
         name="post-list"
     ),
 
     path(
-        "post-create/", 
+        "posts/post-create/", 
         PostCreateAPIView.as_view(), 
         name="post-create"
     ),
@@ -22,7 +22,7 @@ urlpatterns = [
     ),
 
     path(
-        "post/<int:id>/delete/", 
+        "posts/<int:id>/delete/", 
         PostDeleteAPIView.as_view(), 
         name="post-delete"
     ),

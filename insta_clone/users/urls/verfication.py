@@ -4,7 +4,7 @@ from users.views import *
 urlpatterns = [
     # Verfication endpoints
     path(
-        "send-verification-code/", 
+        "users/send-verification-code/", 
         SendVerificationCodeView.as_view(), 
         name="send_verification_code"
     ),
