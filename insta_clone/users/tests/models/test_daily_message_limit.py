@@ -12,9 +12,9 @@ class TestDailyMessageLimit:
         """
         limit_obj = DailyMessageLimit.objects.create()
 
-        assert limit_obj.limit == 3  # Default limit value
+        assert limit_obj.limit == 3                               # Default limit value
         assert limit_obj.expiration_time == timedelta(minutes=3)  # Default expiration_time value
-        assert limit_obj.reset_time == timedelta(hours=24)  # Default reset_time value
+        assert limit_obj.reset_time == timedelta(hours=24)        # Default reset_time value
     
     def test_custom_values(self):
         """

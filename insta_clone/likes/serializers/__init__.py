@@ -1,2 +1,2 @@
-from .post_likes import LikeSerializer
+from .post_likes import PostLikeSerializer
 from .comment_likes import CommentLikeSerializer

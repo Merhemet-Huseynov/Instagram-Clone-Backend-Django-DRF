@@ -128,7 +128,7 @@ def test_post_detail(
     ) -> None:
     """Test retrieving post details."""
     client.force_authenticate(user=user)
-    response = client.get(f"/api/v1/posts/posts/{post.id}/")    
+    response = client.get(f"/api/v1/posts/{post.id}/")    
     assert response.status_code == status.HTTP_200_OK
 
 @pytest.mark.django_db
@@ -137,7 +137,7 @@ def test_delete_post(
     ) -> None:
     """Test deleting a post by the owner."""
     client.force_authenticate(user=user)
-    response = client.delete(f"/api/v1/posts/post/{post.id}/delete/")
+    response = client.delete(f"/api/v1/posts/{post.id}/delete/")
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 @pytest.mark.django_db
@@ -147,7 +147,7 @@ def test_delete_post_forbidden(
 
     """Test deleting a post that is not owned by the user."""
     client.force_authenticate(user=other_user)
-    response = client.delete(f"/api/v1/posts/post/{post.id}/delete/")
+    response = client.delete(f"/api/v1/posts/{post.id}/delete/")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 @pytest.mark.django_db

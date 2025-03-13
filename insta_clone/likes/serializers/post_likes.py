@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from likes.models import Like
-from typing import Any
+from likes.models import PostLike
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
@@ -8,15 +7,9 @@ class PostLikeSerializer(serializers.ModelSerializer):
     Serializer for the Like model, including fields for the like's ID, user, 
     associated post, and formatted creation date. It also includes a method 
     for formatting the date when the like was created.
-
-    Attributes:
-        formatted_date: A formatted string representation of the like's creation date.
-
-    Methods:
-        get_formatted_date: Returns a formatted string of the created_at field.
     """
 
-    formatted_date: serializers.SerializerMethodField
+    formatted_date = serializers.SerializerMethodField()
 
     class Meta:
         model = PostLike
@@ -32,13 +25,13 @@ class PostLikeSerializer(serializers.ModelSerializer):
             "created_at",
             "formatted_date",
         ]
-    
-    def get_formatted_date(self, obj: PostLike) -> str:
+
+    def get_formatted_date(self, obj):
         """
         Returns a formatted string representation of the like's creation date.
 
         Args:
-            obj (Like): The instance of the Like model.
+            obj (PostLike): The instance of the PostLike model.
 
         Returns:
             str: A string formatted date of the like's creation.

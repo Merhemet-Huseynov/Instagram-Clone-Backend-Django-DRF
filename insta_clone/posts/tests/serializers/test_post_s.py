@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.timezone import localtime
 from rest_framework.test import APIClient
 from django.utils import timezone
 from posts.models import Post
@@ -53,7 +54,7 @@ class TestPostSerializer:
         assert data["id"] == post.id
         assert data["user"] == str(post.user)
         assert data["caption"] == post.caption
-        assert data["formatted_date"] == post.created_at.strftime("%d %B %Y, %H:%M:%S")
+        assert data["created_at"] == localtime(post.created_at).strftime("%d %B %Y, %H:%M:%S")
 
     def test_get_formatted_date(self, post: Post) -> None:
         """
@@ -63,8 +64,8 @@ class TestPostSerializer:
             post (Post): The post instance to test the method with.
         """
         serializer = PostSerializer(post)
-        expected_formatted_date = post.created_at.strftime("%d %B %Y, %H:%M:%S")
-        assert serializer.data["formatted_date"] == expected_formatted_date
+        expected_formatted_date = localtime(post.created_at).strftime("%d %B %Y, %H:%M:%S")
+        assert serializer.data["created_at"] == expected_formatted_date
 
     def test_post_creation_timestamp(self, post: Post) -> None:
         """
@@ -73,4 +74,4 @@ class TestPostSerializer:
         Args:
             post (Post): The post instance to test the timestamp with.
         """
-        assert post.created_at <= timezone.now()
+        assert localtime(post.created_at) <= timezone.now()

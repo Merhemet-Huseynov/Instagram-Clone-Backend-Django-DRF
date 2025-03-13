@@ -1,6 +1,6 @@
+from django.utils.timezone import localtime
 from rest_framework import serializers
 from posts.models import Post
-
 
 class PostSerializer(serializers.ModelSerializer):
     """
@@ -17,10 +17,7 @@ class PostSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(
         read_only=True
     )
-    created_at = serializers.DateTimeField(
-        format="%d %B %Y, %H:%M:%S", 
-        read_only=True
-    )
+    created_at = serializers.SerializerMethodField()
     like_count = serializers.IntegerField(
         source="get_like_count", 
         read_only=True
@@ -50,6 +47,18 @@ class PostSerializer(serializers.ModelSerializer):
             "comment_count",
             "users_who_liked",
         ]
+
+    def get_created_at(self, obj: Post) -> str:
+        """
+        Returns the formatted created_at timestamp in the Asia/Baku timezone.
+
+        Args:
+            obj (Post): The post instance.
+
+        Returns:
+            str: Formatted timestamp.
+        """
+        return localtime(obj.created_at).strftime("%d %B %Y, %H:%M:%S")
 
     def get_users_who_liked(self, obj: Post) -> list:
         """
