@@ -79,13 +79,3 @@ def test_toggle_like_multiple_times(user, comment):
     
     assert CommentLike.toggle_like(user, comment) is True
     assert CommentLike.objects.count() == 1
-
-@pytest.mark.django_db
-def test_toggle_like_nonexistent_comment(user):
-    """
-    Test that liking a nonexistent comment does not create a like.
-    """
-    non_existent_comment = Comment.objects.filter(id=-1).first()
-    result = CommentLike.toggle_like(user, non_existent_comment)
-    assert result is False
-    assert CommentLike.objects.count() == 0

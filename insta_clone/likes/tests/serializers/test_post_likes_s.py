@@ -4,7 +4,7 @@ from likes.models import PostLike
 from posts.models import Post
 from django.contrib.auth import get_user_model
 from datetime import datetime
-from rest_framework.serializers import Dict
+from typing import Dict
 
 User = get_user_model()
 

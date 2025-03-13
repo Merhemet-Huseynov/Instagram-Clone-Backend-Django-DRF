@@ -15,4 +15,3 @@ urlpatterns = [
         name="list_comments"
     ),
 ]
-
