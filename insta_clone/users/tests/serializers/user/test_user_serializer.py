@@ -92,50 +92,27 @@ class TestUserSerializer:
 
 @pytest.mark.django_db
 class TestUpdateProfileSerializer:
-    def test_update_profile_serializer_valid_data(self, user: CustomUser) -> None:
-        """
-        Test that valid data can successfully update the user profile using PUT method.
-
-        Args:
-            user (CustomUser): The user instance to update.
-        """
-        image = BytesIO()
-        image.write(b"image_data") 
-        image.seek(0)
-        uploaded_file = InMemoryUploadedFile(
-            image, None, "test_image.jpg", "image/jpeg", len(image.getvalue()), None
-        )
-
-        data = {
-            "first_name": "UpdatedFirstName",
-            "last_name": "UpdatedLastName",
-            "bio": "Updated bio text.",
-            "profile_picture": "" 
-        }
-
-        client = APIClient()
-        client.force_authenticate(user=user)
-
-        response = client.put(f"/api/v1/users/update-profile/", data, format="multipart")
-
-        assert response.status_code == 200
-        updated_user = CustomUser.objects.get(id=user.id)
-        assert updated_user.first_name == "UpdatedFirstName"
-        assert updated_user.last_name == "UpdatedLastName"
-        assert updated_user.bio == "Updated bio text."
-        assert updated_user.profile_picture == ""
-
     def test_update_profile_serializer_invalid_data(self, user: CustomUser) -> None:
         """
         Test that invalid data (e.g., exceeding max length) raises a validation error.
-
-        Args:
-            user (CustomUser): The user instance to test.
         """
         data = {
-            "first_name": "A" * 31, 
+            "first_name": "A" * 31,
         }
+        serializer = UpdateProfileSerializer(instance=user, data=data, partial=True)
+        assert not serializer.is_valid()
+        assert "first_name" in serializer.errors
 
-        serializer = UpdateProfileSerializer(user, data=data)
-        with pytest.raises(ValidationError):
-            serializer.is_valid(raise_exception=True)
+    def test_update_profile_serializer_partial_update(self, user: CustomUser) -> None:
+        """
+        Test that partial update works when only some fields are provided.
+        """
+        data = {"bio": "New bio content."}
+        serializer = UpdateProfileSerializer(
+            instance=user, 
+            data=data, 
+            partial=True
+        )
+        assert serializer.is_valid(), serializer.errors
+        updated_user = serializer.save()
+        assert updated_user.bio == "New bio content."

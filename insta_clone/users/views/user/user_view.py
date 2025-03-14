@@ -2,8 +2,10 @@ import logging
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView, Response, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from drf_yasg.utils import swagger_auto_schema
 from django.shortcuts import get_object_or_404
+from drf_yasg import openapi
 
 from users.models import CustomUser
 from users.serializers import UserSerializer, UpdateProfileSerializer
@@ -49,46 +51,47 @@ class UserProfileView(APIView):
 
 class UpdateProfileView(APIView):
     """
-    API view to update the authenticated user's profile.
-
-    This view is accessible only to authenticated users and allows the user to update 
-    their profile details, including profile picture, bio, etc.
+    View for updating a user's profile with support for multipart form data.
+    
+    This view allows users to update their first name, last name, bio, and profile picture.
+    It supports multipart form data format (image uploads).
     """
 
-    parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [IsAuthenticated]
-    
-    def get_object(self) -> CustomUser:
-        """
-        Retrieves the currently authenticated user.
-
-        Returns:
-            CustomUser: The currently authenticated user.
-        """
-        return self.request.user
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser] 
 
     @swagger_auto_schema(
         request_body=UpdateProfileSerializer,
-        operation_description="User profile update endpoint",
-        consumes=["multipart/form-data"]
+        responses={
+            status.HTTP_200_OK: openapi.Response(
+                description="Profile updated successfully",
+                schema=UpdateProfileSerializer,
+            ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                description="Invalid input or failed validation"
+            ),
+        },
     )
-    def put(self, request, *args, **kwargs) -> Response:
+    def put(self, request, *args, **kwargs):
         """
-        Updates the profile of the authenticated user.
-
-        Args:
-            request: The HTTP request containing the updated profile data.
-
-        Returns:
-            Response: The updated user profile data, or an error if the data is invalid.
+        Updates the user profile with the provided data.
+        
+        Only the authenticated user can update their own profile.
         """
-        user = self.get_object()
-        serializer = UpdateProfileSerializer(user, data=request.data)
-
+        user = request.user  # Get the current authenticated user
+        
+        # Deserialize the incoming request data using the UpdateProfileSerializer
+        serializer = UpdateProfileSerializer(
+            user, data=request.data
+        )
+        
+        # Validate the data
         if serializer.is_valid():
+            # Save the updated profile
             serializer.save()
-            logger.info(f"User profile updated for user: {user.username}")
             return Response(serializer.data, status=status.HTTP_200_OK)
-
-        logger.error(f"Failed to update profile for user: {user.username} - {serializer.errors}")
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Return validation errors if any
+        return Response(
+            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
