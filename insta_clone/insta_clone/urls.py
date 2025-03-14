@@ -62,7 +62,7 @@ urlpatterns = [
         name="redoc-ui",
     ),
 
-    # JWT autentifikasiyası üçün endpointlər
+    # Endpoints for JWT authentication
     path(
         "api/token/", 
         TokenObtainPairView.as_view(),
@@ -97,6 +97,10 @@ urlpatterns = [
     path(
         "api/v1/",
         include("comments.urls")
+    ),
+    path(
+        "api/v1/",
+        include("stories.urls")    
     )
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

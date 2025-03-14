@@ -12,7 +12,7 @@ class CommentAdmin(admin.ModelAdmin):
         "text", 
         "created_at", 
         "like_count"
-    )  
+    )
     list_filter = (
         "post", 
         "created_at"
