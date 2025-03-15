@@ -33,9 +33,9 @@ def story(user: get_user_model()) -> Story:
         Story: A test story instance.
     """
     return Story.objects.create(
-        user=user, 
-        created_at="2025-03-15 00:00:00", 
-        expires_at="2025-03-16 00:00:00"
+        user=user,
+        created_at=timezone.make_aware(timezone.datetime(2025, 3, 15, 0, 0, 0)),
+        expires_at=timezone.make_aware(timezone.datetime(2025, 3, 16, 0, 0, 0)),
     )
 
 @pytest.fixture
